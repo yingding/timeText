@@ -5,41 +5,31 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.AutoCenteringParams
 import androidx.wear.compose.material.Chip
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.rememberScalingLazyListState
 import com.example.android.wearable.composeforwearos.theme.WearAppTheme
-import com.google.android.horologist.compose.focus.rememberActiveFocusRequester
-import com.google.android.horologist.compose.navscaffold.ExperimentalHorologistComposeLayoutApi
-import com.google.android.horologist.compose.rotaryinput.rotaryWithFling
+import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults
+import com.google.android.horologist.compose.layout.ScalingLazyColumnState
 
 /**
  * NavMenuScreen use on the Home Activity, which is the main menu of the app
  */
-@OptIn(ExperimentalHorologistComposeLayoutApi::class)
 @Composable
 fun NavMenuScreen(
     modifier: Modifier = Modifier,
     navigateToRoute: (String) -> Unit,
-    scrollState: ScalingLazyListState,
+    columnState: ScalingLazyColumnState,
 ) {
-    val focusRequester = rememberActiveFocusRequester()
-    ScalingLazyColumn (
-        modifier = modifier
-            .fillMaxSize()
-            .rotaryWithFling(focusRequester, scrollState),
-        state = scrollState,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        autoCentering = AutoCenteringParams(itemIndex = 0)
+    ScalingLazyColumn(
+        modifier = modifier.fillMaxSize(),
+        columnState = columnState,
     ) {
         item {
             SampleChip(
@@ -53,11 +43,6 @@ fun NavMenuScreen(
                 label = "overlap"
             )
         }
-    }
-
-    // added launchedEffect to request focus so that the bezel event can be detected.
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
     }
 }
 
@@ -95,10 +80,10 @@ fun SampleChip(
 @Composable
 fun NavMenuScreenPreview() {
     WearAppTheme {
-        val scalingLazyListState = rememberScalingLazyListState()
         NavMenuScreen(
-            navigateToRoute = {_ -> },
-            scrollState = scalingLazyListState,
+            navigateToRoute = { _ -> },
+            columnState = ScalingLazyColumnDefaults.belowTimeText(firstItemIsFullWidth = true)
+                .create(),
         )
     }
 }

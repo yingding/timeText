@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,8 +27,6 @@ import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.ScalingLazyColumn
-import androidx.wear.compose.material.ScalingLazyListState
 import androidx.wear.compose.material.Text
 import androidx.wear.compose.material.VignettePosition
 import androidx.wear.compose.material.rememberSwipeToDismissBoxState
@@ -38,16 +36,18 @@ import com.example.android.wearable.composeforwearos.nav.NavMenuScreen
 import com.example.android.wearable.composeforwearos.nav.NavScreen
 import com.example.android.wearable.composeforwearos.theme.WearAppTheme
 import com.google.android.horologist.compose.focus.rememberActiveFocusRequester
+import com.google.android.horologist.compose.layout.ScalingLazyColumn
+import com.google.android.horologist.compose.layout.ScalingLazyColumnDefaults
+import com.google.android.horologist.compose.layout.ScalingLazyColumnState
 import com.google.android.horologist.compose.navscaffold.ExperimentalHorologistComposeLayoutApi
 import com.google.android.horologist.compose.navscaffold.NavScaffoldViewModel
 import com.google.android.horologist.compose.navscaffold.WearNavScaffold
 import com.google.android.horologist.compose.navscaffold.scrollable
-import com.google.android.horologist.compose.rotaryinput.rotaryWithScroll
 
 class MainActivity : ComponentActivity() {
     private var navController: NavHostController? = null
 
-        override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -76,10 +76,11 @@ fun WearApp(
     ) {
         scrollable(
             route = NavScreen.Menu.route,
+            columnStateFactory = ScalingLazyColumnDefaults.belowTimeText(firstItemIsFullWidth = true)
         ) {
             NavMenuScreen(
                 navigateToRoute = { route -> navController.navigate(route) },
-                scrollState = it.scrollableState
+                columnState = it.columnState
             )
         }
 
@@ -91,7 +92,7 @@ fun WearApp(
                 NavScaffoldViewModel.VignetteMode.On(VignettePosition.TopAndBottom)
             it.positionIndicatorMode =
                 NavScaffoldViewModel.PositionIndicatorMode.On
-            ThreeItemsList(state = it.scrollableState, headText = "Not Centering")
+            ThreeItemsList(columnState = it.columnState, headText = "Not Centering")
         }
 
         /* Time Text Abnormal2, Overlapping
@@ -102,22 +103,22 @@ fun WearApp(
                 NavScaffoldViewModel.VignetteMode.On(VignettePosition.TopAndBottom)
             it.positionIndicatorMode =
                 NavScaffoldViewModel.PositionIndicatorMode.On
-            ThreeItemsList(state = it.scrollableState, headText = "Two line header very close to Time Text ")
+            ThreeItemsList(
+                columnState = it.columnState,
+                headText = "Two line header very close to Time Text "
+            )
         }
     } // end of wear nav scaffold
 }
 
 @Composable
 fun ThreeItemsList(
-    state: ScalingLazyListState,
+    columnState: ScalingLazyColumnState,
     headText: String = "Head Text"
 ) {
-    val focusRequester = rememberActiveFocusRequester()
     ScalingLazyColumn(
-        modifier = Modifier.rotaryWithScroll(focusRequester, state),
-        contentPadding = PaddingValues(horizontal = 6.dp),
-        state = state,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize(),
+        columnState = columnState,
     ) {
         item {
             Text(
@@ -174,6 +175,27 @@ fun ScrollablePreview() {
     WearAppTheme {
         WearApp(
             navController = navController,
+        )
+    }
+}
+
+
+@Preview(
+    device = Devices.WEAR_OS_SMALL_ROUND,
+    showSystemUi = true,
+    showBackground = true
+)
+@Preview(
+    device = Devices.WEAR_OS_SQUARE, // small square
+    showSystemUi = true,
+    showBackground = true
+)
+@Composable
+fun ThreeItemListPreview() {
+    WearAppTheme {
+        ThreeItemsList(
+            columnState = ScalingLazyColumnDefaults.belowTimeText()
+                .create(),
         )
     }
 }
