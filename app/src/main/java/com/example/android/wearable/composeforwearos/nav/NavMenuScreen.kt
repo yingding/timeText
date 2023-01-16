@@ -81,8 +81,9 @@ fun SampleChip(
 fun NavMenuScreenPreview() {
     WearAppTheme {
         NavMenuScreen(
-            navigateToRoute = {_ -> },
-            columnState = ScalingLazyColumnDefaults.belowTimeText().create(),
+            navigateToRoute = { _ -> },
+            columnState = ScalingLazyColumnDefaults.belowTimeText(firstItemIsFullWidth = true)
+                .create(),
         )
     }
 }
