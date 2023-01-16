@@ -178,3 +178,24 @@ fun ScrollablePreview() {
         )
     }
 }
+
+
+@Preview(
+    device = Devices.WEAR_OS_SMALL_ROUND,
+    showSystemUi = true,
+    showBackground = true
+)
+@Preview(
+    device = Devices.WEAR_OS_SQUARE, // small square
+    showSystemUi = true,
+    showBackground = true
+)
+@Composable
+fun ThreeItemListPreview() {
+    WearAppTheme {
+        ThreeItemsList(
+            columnState = ScalingLazyColumnDefaults.belowTimeText()
+                .create(),
+        )
+    }
+}
